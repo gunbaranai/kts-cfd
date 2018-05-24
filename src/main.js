@@ -1,6 +1,6 @@
 var CarFreeDay = CarFreeDay || {};
 
-CarFreeDay.game = new Phaser.Game(720, 1280, Phaser.CANVAS, '');
+CarFreeDay.game = new Phaser.Game(720, 1280, Phaser.AUTO, '');
 
 CarFreeDay.game.state.add('Boot', CarFreeDay.Boot);
 CarFreeDay.game.state.add('Preload', CarFreeDay.Preload);
