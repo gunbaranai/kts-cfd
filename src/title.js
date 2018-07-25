@@ -15,7 +15,7 @@ CarFreeDay.Title.prototype = {
         this.top = this.game.add.sprite(this.game.world.centerX,48,'ui_top');
         this.top.anchor.setTo(0.5);
 
-        var playText = "TAP TO PLAY";
+        var playText = "TAP TO HIDE BANNER";
         var playStyle = { font: "50px Arial", fill: "#ffffff", align: "center", strokeThickness: 10 };
         this.play = this.game.add.text(this.game.world.centerX,this.game.world.centerY-150,playText,playStyle);
         this.play.anchor.setTo(0.5);

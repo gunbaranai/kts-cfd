@@ -1,7 +1,7 @@
 Cocoon.Ad.AdMob.configure({
     android: {
-        banner:"ca-app-pub-7686972479101507/4443703872",
-        interstitial:"ca-app-pub-7686972479101507/4443703872"
+        appId: "ca-app-pub-3537042140912764~9994705449",
+        banner: "ca-app-pub-3537042140912764/3161402464"
     }
 });
 
