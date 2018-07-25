@@ -4,6 +4,7 @@ CarFreeDay.Title = function(){};
 CarFreeDay.Title.prototype = {
     // Create title objects (background, buttons, etc)
     create: function(){
+        banner.show();
         this.background = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY,'title_bg');
         this.background.anchor.setTo(0.5);
         this.background.animations.add('loop');

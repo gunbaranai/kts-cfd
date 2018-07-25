@@ -7,6 +7,7 @@ CarFreeDay.Game.prototype = {
     //},
     // Create
     create: function(){
+        banner.hide();
         this.background = this.game.add.tileSprite(this.game.world.centerX,this.game.world.centerY,this.game.width,this.game.height,'kpa');
         this.background.anchor.setTo(0.5);
         //this.background.scale.setTo(6);
