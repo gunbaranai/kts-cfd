@@ -6,4 +6,3 @@ Cocoon.Ad.AdMob.configure({
 });
 
 var banner = Cocoon.Ad.AdMob.createBanner();
-var interstitial = Cocoon.Ad.AdMob.createInterstitial();
