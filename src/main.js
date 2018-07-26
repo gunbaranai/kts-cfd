@@ -1,9 +1,6 @@
 document.addEventListener("deviceready", onDeviceReady, false);
 function onDeviceReady(){
-	StatusBar.hide();
-}
-
-window.onload = function(){
+	//StatusBar.hide();
 	var CarFreeDay = CarFreeDay || {};
 
 	CarFreeDay.game = new Phaser.Game(720, 1280, Phaser.AUTO, '');
@@ -17,3 +14,7 @@ window.onload = function(){
 
 	CarFreeDay.game.state.start('Boot');
 }
+
+//window.onload = function(){
+	
+//}
