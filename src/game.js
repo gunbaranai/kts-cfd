@@ -9,86 +9,29 @@ CarFreeDay.Game.prototype = {
     create: function(){
         extraLive = false;
         interstitialShown = false;
-        //rewardedVideoShown = false;
+
         this.activationDelay = 0;
         this.lives = lives;
         this.score = 0;
-        this.spawnInterval = 1500;
-        this.spawnDuration = 1000;
-        //this.spawnIntervalStep = 725;
-        //this.spawnDurationStep = 320;
 
-        this.boardExtension = 100;
-        this.boardLength = this.game.world.width+(2*this.boardExtension);
-        this.boardGap = this.boardLength/4;
-        this.boardOX = -this.boardExtension;
-        this.boardOY = (this.game.world.height-this.boardLength)/2;
+        var seed;
+        seed = this.game.rnd.integerInRange(1,6);
 
-        this.background = this.game.add.tileSprite(0,0,720,1280,'bg');
-        this.background.scale.setTo(6);
-        //this.shadow = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY,'shadow');
-        //this.shadow.anchor.setTo(0.5,0.5);
-        //this.shadow.scale.setTo(5.5);
+        this.backWidth = this.game.cache.getImage(this.backTheme).width;
+        this.backHeight = this.game.cache.getImage(this.backTheme).height;
+        this.backs = this.game.add.group();
+        this.backs.createMultiple(100, this.backTheme);
+
         this.top = this.game.add.sprite(this.game.world.centerX,48,'ui_top');
         this.top.anchor.setTo(0.5);
 
-        //var scoreStyle = { font: "40px papercuts", fill: "#ffffff", align: "left", strokeThickness: 5 };
-        //var numberStyle = { font: "40px papercuts", fill: "#ffffff", align: "left", strokeThickness: 5 };
         this.scoreText = this.game.add.bitmapText(10,-5,'papercuts',"Score: ",40);
         this.recordText = this.game.add.bitmapText(10,30,'papercuts',"Record: ",40);
         this.scoreNumber = this.game.add.bitmapText(150,-5,'papercuts',lastScore,40);
         this.recordNumber = this.game.add.bitmapText(150,30,'papercuts',""+record+"",40);
 
-        //var liveStyle = { font: "50px papercuts", fill: "#ffffff", align: "right", strokeThickness: 10 };
         this.liveIcon = this.game.add.sprite(this.game.world.width-320,15,'live');
         this.liveNumber = this.game.add.bitmapText(this.game.world.width-270,15,'papercuts',"x"+this.lives,50);
-
-        this.clickSound = this.game.add.audio('hit');
-        this.correctSound = this.game.add.audio('correct');
-        this.wrongSound = this.game.add.audio('wrong');
-        this.emptySound = this.game.add.audio('empty');
-
-        // Creates rice cookersz
-        this.moles = this.game.add.group();
-        this.moles.enableBody = true;
-        var i, mole;
-        for (i = 0; i < 9; i++) {
-            posX = i%3;
-            posY = Math.floor(i/3);
-            mole = this.moles.create(this.boardOX+this.boardGap*(posX+1),this.boardOY+this.boardGap*(posY+1),'idle');
-            mole.body.immovable = true;
-            //mole.scale.setTo(0);
-            mole.anchor.setTo(0.5,0.5);
-            mole.active = false;
-            mole.hit = false;
-            mole.activeDuration = 0;
-            mole.inputEnabled = true;
-            mole.type = '';
-            mole.events.onInputDown.add(function(sprite){
-                this.clickSound.play();
-                if(sprite.type != '' && !sprite.hit){
-                    //console.log('hit!');
-                    sprite.hit = true;
-                    switch(sprite.type){
-                        case 'coffee':
-                            this.score += 50;
-                            sprite.loadTexture('coffee_hit');
-                            this.correctSound.play();
-                            break;
-                        case 'head':
-                            this.lives -= 3;
-                            sprite.loadTexture('head_hit');
-                            this.wrongSound.play();
-                            break;
-                        default:
-                            this.lives -= 1;
-                            this.emptySound.play();
-                            break;
-                    }
-                    sprite.activeDuration = 2*this.spawnDuration/3;
-                }
-            },this);
-        }
 
         // Create mute button
         if(!this.game.sound.mute){

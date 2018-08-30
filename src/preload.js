@@ -5,11 +5,9 @@ CarFreeDay.Preload.prototype = {
     preload: function(){
         this.splash = this.add.sprite(this.game.world.centerX, this.game.world.centerY, 'logo');
         this.splash.anchor.setTo(0.5);
-        //this.splash.scale.setTo(scaleRatio);
         
         this.preloadBar = this.add.sprite(this.game.world.centerX, this.game.world.centerY+196, 'preloadbar');
         this.preloadBar.anchor.setTo(0.5);
-        //this.preloadBar.scale.setTo(scaleRatio);
 
         this.load.setPreloadSprite(this.preloadBar);
 
@@ -25,7 +23,6 @@ CarFreeDay.Preload.prototype = {
 
     loadImages: function(){
         this.load.spritesheet('title_bg','assets/images/title_bg.png',720,1280);
-        //this.load.image('title_staticbg','assets/images/title_staticbg.png')
         this.load.image('title_title','assets/images/title_title.png');
 
         this.load.image('ui_top','assets/images/ui_top.png');
@@ -42,24 +39,25 @@ CarFreeDay.Preload.prototype = {
         this.load.image('ui_soundon','assets/images/ui_sndon.png');
         this.load.image('ui_soundoff','assets/images/ui_sndoff.png');
 
-        this.load.image('bg','assets/images/bg.png');
-        //this.load.image('shadow','assets/images/shadow.png');
+        this.load.image('bg_kpa','assets/images/kpa/background.png');
+        this.load.image('bg_lwc','assets/images/lwc/background.png');
+        this.load.image('bg_ncf','assets/images/ncf/background.png');
+        this.load.image('bg_sbx','assets/images/sbx/background.png');
+        this.load.image('bg_ucc','assets/images/ucc/background.png');
+
+        this.load.image('obs_kpa_l','assets/images/kpa/obs_static_left.png');
+        this.load.image('obs_kpa_r','assets/images/kpa/obs_static_right.png');
+
+        this.load.image('obs_lwc_m','assets/images/lwc/obs_static_side.png');
+        this.load.image('obs_lwc_ml','assets/images/lwc/obs_passable_left.png');
+        this.load.image('obs_lwc_mr','assets/images/lwc/obs_passable_right.png');
+        this.load.image('obs_lwc_l','assets/images/lwc/obs_static_center.png');
 
         this.load.image('live','assets/images/live.png');
+        this.load.image('coin','assets/images/coin.png');
         this.load.spritesheet('star','assets/images/star.png',102,90);
 
-        this.load.image('idle','assets/images/m-idle.png');
-        this.load.image('open','assets/images/m-open.png');
-        this.load.image('coffee','assets/images/m-coffee.png');
-        this.load.image('coffee_hit','assets/images/m-coffee-hit.png');
-        this.load.image('head','assets/images/m-head.png');
-        this.load.image('head_hit','assets/images/m-head-hit.png');
-
-        this.load.image('p_fail','assets/images/p-fail.png');
-        this.load.image('p_bad','assets/images/p-bad.png');
-        this.load.image('p_good','assets/images/p-good.png');
-        this.load.image('p_nice','assets/images/p-nice.png');
-        this.load.image('p_magnifico','assets/images/p-magnifico.png');
+        this.load.spritesheet('player','assets/images/player',144,144);
 
         this.load.image('wall_l','assets/images/wall-l.png');
         this.load.image('wall_r','assets/images/wall-r.png');
