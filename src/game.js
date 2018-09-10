@@ -15,7 +15,7 @@ CarFreeDay.Game.prototype = {
         this.level = 1;
         this.levelUpTimer = 0;
         this.scoreUpTimer = 0;
-        this.speed = 1;
+        this.speed = 3;
         currentTheme = this.game.rnd.integerInRange(1,5);
 
         this.roads = this.add.group();
@@ -92,8 +92,15 @@ CarFreeDay.Game.prototype = {
                 this.levelUpTimer = 0;
                 this.level += 1;
                 currentTheme = this.game.rnd.integerInRange(1,5);
-                this.speed += 0.5;
+                this.speed += 0.3;
                 console.log(currentTheme);
+                for(var i=0; i<this.roads.length;){
+                    if(this.roads.children[i].y > 3000){
+                        this.roads.remove(this.roads.children[i], true);
+                        continue;
+                    }
+                    i++;
+                }
             }
 
             var pbr;
