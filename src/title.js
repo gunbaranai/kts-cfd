@@ -42,7 +42,6 @@ CarFreeDay.Title.prototype = {
             this.allStars.visible = false;
             this.centralScoreText.visible = false;
             this.centralScoreNumber.visible = false;
-            this.centralScoreSprite.visible = false;
             this.centralScoreRecord.visible = false;
 
             this.blinkTimer += this.game.time.elapsed;
@@ -118,20 +117,6 @@ CarFreeDay.Title.prototype = {
             //this.adWatchButton.visible = false;
         }
 
-        if(this.tutorialCoffee.visible && this.tutorialOpen.visible && this.tutorialHead.visible){
-            this.animationTimer += this.game.time.elapsed;
-            if(this.animationTimer >= 1000){
-                this.tutorialCoffee.loadTexture('coffee_hit');
-                this.tutorialOpen.loadTexture('idle');
-                this.tutorialHead.loadTexture('head_hit');
-                this.animationTimer = 0;
-            } else if(this.animationTimer >= 500){
-                this.tutorialCoffee.loadTexture('coffee');
-                this.tutorialOpen.loadTexture('open');
-                this.tutorialHead.loadTexture('head');
-            }
-        }
-
         if(this.newRecord){
             this.blinkTimer += this.game.time.elapsed;
             if( this.blinkTimer >= 1000 ){
@@ -192,33 +177,6 @@ CarFreeDay.Title.prototype = {
         );
         this.centralScoreRecord.anchor.setTo(0.5);
 
-        this.centralScoreSprite = this.game.add.sprite(this.game.world.centerX,this.game.world.centerY+100,'p_fail');
-        this.centralScoreSprite.anchor.setTo(0.5);
-
-        if(lastScore >= 2201){
-            this.stars = 5;
-            this.centralScoreSprite.loadTexture('p_magnifico');
-            this.centralScoreText.text = "Magnifico!";
-            this.applauseSound.play();
-        } else if(lastScore < 400){
-            this.stars = 1;
-            this.centralScoreText.text = "Fail!";
-            if(lastScore == 0){
-                this.centralScoreNumber.text = "0";
-            }
-        } else if(lastScore < 900){
-            this.stars = 2;
-            this.centralScoreSprite.loadTexture('p_bad');
-            this.centralScoreText.text = "Bad!";
-        } else if(lastScore < 1500){
-            this.stars = 3;
-            this.centralScoreSprite.loadTexture('p_good');
-            this.centralScoreText.text = "Mediocre!";
-        } else if(lastScore <= 2200){
-            this.stars = 4;
-            this.centralScoreSprite.loadTexture('p_nice');
-            this.centralScoreText.text = "Nice!";
-        }
         if(lastScore > record){
             record = lastScore;
             localStorage.setItem("record", lastScore);
@@ -303,40 +261,13 @@ CarFreeDay.Title.prototype = {
         this.tutorialMain.anchor.setTo(0.5);
         this.tutorialMain.align = 'center';
 
-        this.tutorialCoffee = this.game.add.sprite(this.game.world.centerX-100,this.game.world.centerY-11,'coffee');
-        this.tutorialCoffee.anchor.setTo(0.5);
-        this.tutorialSideCoffee = this.game.add.bitmapText(
-            this.game.world.centerX+100,this.game.world.centerY-11,'papercuts',"Ketuk",60
-        );
-        this.tutorialSideCoffee.anchor.setTo(0.5);
-
-        this.tutorialOpen = this.game.add.sprite(this.game.world.centerX-100,this.game.world.centerY+183,'open');
-        this.tutorialOpen.anchor.setTo(0.5);
-        this.tutorialSideOpen = this.game.add.bitmapText(
-            this.game.world.centerX+100,this.game.world.centerY+183,'papercuts',"Jangan",60
-        );
-        this.tutorialSideOpen.anchor.setTo(0.5);
-
-        this.tutorialHead = this.game.add.sprite(this.game.world.centerX-100,this.game.world.centerY+376,'head');
-        this.tutorialHead.anchor.setTo(0.5);
-        this.tutorialSideHead = this.game.add.bitmapText(
-            this.game.world.centerX+100,this.game.world.centerY+376,'papercuts',"Jangan",60
-        );
-        this.tutorialSideHead.anchor.setTo(0.5);
-
         this.animationTimer = 0;
 
         this.tutorialStuffs.add(this.tutorialBack);
         this.tutorialStuffs.add(this.closeTutorialButton);
         this.tutorialStuffs.add(this.tutorialTitle);
         this.tutorialStuffs.add(this.tutorialMain);
-        this.tutorialStuffs.add(this.tutorialSideCoffee);
-        this.tutorialStuffs.add(this.tutorialSideOpen);
-        this.tutorialStuffs.add(this.tutorialSideHead);
         this.tutorialStuffs.visible = false;
-        this.tutorialCoffee.visible = false;
-        this.tutorialOpen.visible = false;
-        this.tutorialHead.visible = false;
     },
 
     loadSocial: function(){

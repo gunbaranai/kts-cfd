@@ -10,17 +10,18 @@ CarFreeDay.Game.prototype = {
         extraLive = false;
         interstitialShown = false;
 
-        this.activationDelay = 0;
         this.lives = lives;
         this.score = 0;
+        this.level = 1;
+        this.levelUpTimer = 0;
+        this.scoreUpTimer = 0;
+        this.speed = 1;
+        currentTheme = this.game.rnd.integerInRange(1,5);
 
-        var seed;
-        seed = this.game.rnd.integerInRange(1,6);
-
-        this.backWidth = this.game.cache.getImage(this.backTheme).width;
-        this.backHeight = this.game.cache.getImage(this.backTheme).height;
-        this.backs = this.game.add.group();
-        this.backs.createMultiple(100, this.backTheme);
+        this.roads = this.add.group();
+        this.roads.create(0,0,this.addRoad(currentTheme));
+        this.roads.scrollY = 0;
+        //this.road = this.game.add.tileSprite(0,0,720,1280,this.seedRoad());
 
         this.top = this.game.add.sprite(this.game.world.centerX,48,'ui_top');
         this.top.anchor.setTo(0.5);
@@ -66,122 +67,40 @@ CarFreeDay.Game.prototype = {
             lastScore = this.score;
             this.lives = 0;
         } else {
+            this.liveNumber.text = "x"+this.lives;
 
-        this.liveNumber.text = "x"+this.lives;
-        this.scoreNumber.text = this.score;
-        var pbr;
-        pbr = this.score/40;
-        bgm._sound.playbackRate.value = (pbr+100)/100;
 
-        if(this.score >= 4300){
-            this.spawnInterval = 100;
-            this.spawnDuration = 600;
-        } else if(this.score >= 2300){
-            this.spawnInterval = (4750-this.score)/5;
-            this.spawnDuration = 600;
-        } else if(this.score >= 1550){
-            this.spawnInterval = (5250-this.score)/6;
-            this.spawnDuration = (6750-this.score)/7;
-        } else if(this.score >= 1000){
-            this.spawnInterval = (4000-this.score)/4;
-            this.spawnDuration = (4300-this.score)/4;
-        } else if(this.score >= 950){
-            this.spawnInterval = 775;
-            this.spawnDuration = 850;
-        } else if(this.score >= 650){
-            this.spawnInterval = (2500-this.score)/2;
-            this.spawnDuration = (2600-this.score)/2;
-        } else if(this.score >= 550){
-            this.spawnInterval = (2500-this.score)/2;
-            this.spawnDuration = 1000;
-        } else if(this.score >= 300){
-            this.spawnInterval = (1000-this.score)*2;
-            this.spawnDuration = 1000;
-        }
-
-        this.activationDelay += this.game.time.elapsed;
-        if(this.activationDelay >= this.spawnInterval){
-            var searching = true, mole, seed;
-            while(searching){
-                mole = this.moles.getRandom();
-                if(!mole.active){
-                    mole.active = true;
-                    seed = this.game.rnd.integerInRange(1,100);
-                    //console.log(seed);
-                    
-                    if(this.score > 4250){
-                        if(seed < 30){
-                            mole.type = 'coffee';
-                            mole.loadTexture('coffee');
-                        } else if(seed > 65){
-                            mole.type = 'empty';
-                            mole.loadTexture('open');
-                        } else {
-                            mole.type = 'head';
-                            mole.loadTexture('head');
-                        }
-                    } else if(this.score > 2250){
-                        var coffeeSum = (7250-this.score)/100;
-                        if(seed < coffeeSum){
-                            mole.type = 'coffee';
-                            mole.loadTexture('coffee');
-                        } else if(seed > 100-(coffeeSum/2)){
-                            mole.type = 'empty';
-                            mole.loadTexture('open');
-                        } else {
-                            mole.type = 'head';
-                            mole.loadTexture('head');
-                        }
-                    // Third phase, 60 | 30 | 10
-                    } else if(this.score > 100){
-                        if(seed > 50){
-                            mole.type = 'coffee';
-                            mole.loadTexture('coffee');
-                        } else if(seed > 25){
-                            mole.type = 'empty';
-                            mole.loadTexture('open');
-                        } else {
-                            mole.type = 'head';
-                            mole.loadTexture('head');
-                        }
-                    // Second phase, 80 | 20 | 0
-                    } else if(this.score >= 0){
-                        if(seed > 25){
-                            mole.type = 'coffee';
-                            mole.loadTexture('coffee');
-                        } else {
-                            mole.type = 'empty';
-                            mole.loadTexture('open');
-                        }
-                    // First phase, 100 | 0 | 0
-                    } else {
-                        mole.type = 'coffee';
-                        mole.loadTexture('coffee');
-                    }
-                    searching = false;
-                }
+            this.scoreUpTimer += this.game.time.elapsed;
+            if(this.scoreUpTimer>=5000){
+                this.scoreUpTimer = 0;
+                this.score += this.level;
             }
-            this.activationDelay = 0;
+            this.scoreNumber.text = this.score;
+
+            this.roads.y += this.speed;
+            this.roads.scrollY -= 1;
+            if(this.roads.scrollY <= 0){
+                this.roads.scrollY += 25;
+                this.roads.create(0,this.roads.cursor.y-1440,this.addRoad(currentTheme));
+                this.roads.next();
+            }
+
+            //this.road.tilePosition.y += this.speed;
+
+            this.levelUpTimer += this.game.time.elapsed;
+            if( this.levelUpTimer >= 3000 ){
+                this.levelUpTimer = 0;
+                this.level += 1;
+                currentTheme = this.game.rnd.integerInRange(1,5);
+                this.speed += 0.5;
+                console.log(currentTheme);
+            }
+
+            var pbr;
+            pbr = this.score/40;
+            bgm._sound.playbackRate.value = (pbr+100)/100;
         }
         
-        this.moles.forEach(function(mole){
-            if(mole.active){
-                //console.log('durray: ',mole.x,mole.y);
-                mole.activeDuration += this.game.time.elapsed;
-                if(mole.activeDuration >= this.spawnDuration){
-                    if(!mole.hit && mole.type == 'coffee'){
-                        this.lives -= 2;
-                    }
-                    mole.active = false;
-                    mole.hit = false;
-                    mole.type = '';
-                    mole.loadTexture('idle');
-                    mole.activeDuration = 0;
-                }
-            }
-        }, this);
-
-        }
     },
 
     loadWalls: function(){
@@ -206,6 +125,29 @@ CarFreeDay.Game.prototype = {
                 this.game.state.start('Title');
             }, this);
         //}, this);
+    },
+
+    addRoad: function(seed){
+        switch(seed){
+            case 1:
+                backTheme = 'bg_kpa';
+                break;
+            case 2:
+                backTheme = 'bg_lwc';
+                break;
+            case 3:
+                backTheme = 'bg_ncf';
+                break;
+            case 4:
+                backTheme = 'bg_sbx';
+                break;
+            case 5:
+                backTheme = 'bg_ucc';
+                break;
+            default:
+                break;
+        }
+        return backTheme;
     },
 
     // FPS Counter

@@ -3,6 +3,7 @@ var lives = 20;
 var lastScore = 0;
 var extraLive = false;
 var record = localStorage.getItem("record");
+var currentTheme;
 if(record == null){
 	record = 0;
 	localStorage.setItem("record", 0);
@@ -13,7 +14,7 @@ var interstitial, rewardedVideo;
 var interstitialReady, interstitialClosed, interstitialShown, interstitialFailed,
 	rewardedVideoReady, rewardedVideoClosed, rewardedVideoShown  = false;
 	
-function main(){
+/*function main(){
 	if(!window.Cocoon || !Cocoon.Ad || !Cocoon.Ad.AdMob){
 		alert('Cocoon AdMob plugin not installed');
 		return;
@@ -39,7 +40,7 @@ function main(){
 	});
 	interstitial.on("dismiss", function(){
 		interstitialClosed = true;
-	});
+	});*/
 
 	//rewardedVideo = Cocoon.Ad.AdMob.createRewardedVideo();
 	//rewardedVideo.on("load", function(){
@@ -63,6 +64,6 @@ function main(){
 	CarFreeDay.game.state.add('Game', CarFreeDay.Game);
 
 	CarFreeDay.game.state.start('Boot');
-}
+//}
 
-document.addEventListener("deviceready", main, false);
+//document.addEventListener("deviceready", main, false);
