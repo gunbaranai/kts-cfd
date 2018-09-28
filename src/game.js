@@ -16,11 +16,30 @@ CarFreeDay.Game.prototype = {
         this.levelUpTimer = 0;
         this.scoreUpTimer = 0;
         this.speed = 3;
+        this.leanRight = true;
+        this.leanSpeed = 0.1;
+        this.canPress = true;
+        this.pressTimer = 0;
         currentTheme = this.game.rnd.integerInRange(1,5);
 
         this.roads = this.add.group();
         this.roads.create(0,0,this.addRoad(currentTheme));
         this.roads.scrollY = 0;
+
+        this.player = this.game.add.sprite(this.game.world.centerX,this.game.world.height-200,'player');
+        this.player.anchor.setTo(0.5);
+        this.player.animations.add('straight',[0,1]);
+        this.player.animations.add('right',[4,5]);
+        this.player.animations.add('left',[2,3]);
+        this.player.animations.play('straight',10,true);
+        this.player.inv = false;
+        this.player.invTick = 0;
+        this.player.invBlinkTimer = 0;
+        this.game.physics.enable(this.player);
+
+        this.stageObstacles = this.add.physicsGroup();
+        this.stageGimmicks = this.add.group();
+        this.spawnObstacles(currentTheme,this,true);
         //this.road = this.game.add.tileSprite(0,0,720,1280,this.seedRoad());
 
         this.top = this.game.add.sprite(this.game.world.centerX,48,'ui_top');
@@ -66,9 +85,59 @@ CarFreeDay.Game.prototype = {
             fromGameover = true;
             lastScore = this.score;
             this.lives = 0;
+
         } else {
+            //EVERYTHING HAPPENS IN REAL TIME
             this.liveNumber.text = "x"+this.lives;
 
+            if(!this.player.inv){
+                if(this.player.x < 0 || this.player.x > this.game.world.width){
+                    this.player.inv = true;
+                    this.lives -= 1;
+                    this.player.x = this.game.world.centerX;
+                    this.leanSpeed = 0.1;
+                    console.log('oob');
+                }
+                this.stageObstacles.forEach(this.checkHit, this, true, this.player)
+            } else {
+                this.player.invBlinkTimer += this.game.time.elapsed;
+                if( this.player.invBlinkTimer >= 300 ){
+                    this.player.invBlinkTimer = 0;
+                    this.player.visible = !this.player.visible;
+                    this.player.invTick += 1;
+                }
+
+                if(this.player.invTick >= 10){
+                    this.player.invTick = 0;
+                    this.player.invBlinkTimer = 0;
+                    this.player.inv = false;
+                }
+            }
+
+            if(this.leanRight){
+                this.player.animations.play('right',10,true);
+                this.player.x += this.leanSpeed;
+            } else {
+                this.player.animations.play('left',10,true);
+                this.player.x -= this.leanSpeed;
+            }
+            this.leanSpeed += 0.1;
+
+            if(this.game.input.activePointer.worldY >= 150 && this.canPress){
+                if(this.game.input.activePointer.justPressed()){
+                    this.leanRight = !this.leanRight;
+                    this.leanSpeed = 0.1;
+                    this.canPress = false;
+                }
+            }
+
+            if(!this.canPress){
+                this.pressTimer += this.game.time.elapsed;
+                if(this.pressTimer >= 500){
+                    this.pressTimer = 0;
+                    this.canPress = true;
+                }
+            }
 
             this.scoreUpTimer += this.game.time.elapsed;
             if(this.scoreUpTimer>=5000){
@@ -77,12 +146,23 @@ CarFreeDay.Game.prototype = {
             }
             this.scoreNumber.text = this.score;
 
+            this.stageGimmicks.y += this.speed;
+            this.stageObstacles.y += this.speed;
             this.roads.y += this.speed;
             this.roads.scrollY -= 1;
             if(this.roads.scrollY <= 0){
-                this.roads.scrollY += 25;
+                this.roads.scrollY += 50;
                 this.roads.create(0,this.roads.cursor.y-1440,this.addRoad(currentTheme));
+                this.spawnObstacles(currentTheme,this);
                 this.roads.next();
+            }
+
+            for (var i = 0; i<this.stageObstacles.length;) {
+                if(this.stageObstacles.children[i].y > 2000){
+                    this.stageObstacles.remove(this.stageObstacles.children[i], true);
+                    continue;
+                }
+                i++;
             }
 
             //this.road.tilePosition.y += this.speed;
@@ -126,7 +206,7 @@ CarFreeDay.Game.prototype = {
 
         //this.lwClose.onComplete.addOnce(function(){
             this.rwClose.onComplete.addOnce(function(){
-                interstitial.load();
+                //interstitial.load();
                 //rewardedVideo.load();
                 //rewardedVideoReady = rewardedVideo.isReady();
                 this.game.state.start('Title');
@@ -157,9 +237,246 @@ CarFreeDay.Game.prototype = {
         return backTheme;
     },
 
+    spawnObstacles: function(cT,me,init=false){
+        var d = 144, cf, j = 0;
+        if(init){
+            oy = 0;
+        } else {
+            oy = me.roads.cursor.y-1500;
+        }
+
+        for (var i = 49; i >= 0; i--) {
+            switch(i % 5){
+                case 0:
+                    switch(cT){
+                        case 1:
+                            if(me.game.rnd.integerInRange(1,100) > 80){
+                                me.stageObstacles.create(0,(d*j)+oy,'obs_kpa_l');
+                            }
+                            break;
+                        case 2:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                me.stageObstacles.create(0,(d*j)+oy,'obs_lwc_m');
+                                me.stageGimmicks.create(0,(d*j)+oy-100,'obs_lwc_ml');
+                            }
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        case 5:
+                            if(me.game.rnd.integerInRange(1,100) > 90){
+                                if(me.game.rnd.integerInRange(1,100) > 50){
+                                    me.stageObstacles.create(0,(d*j)+oy,'obs_ucc_a');
+                                } else {
+                                    me.stageObstacles.create(0,(d*j)+oy,'obs_ucc_r');
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 1:
+                    cf = me.game.rnd.integerInRange(0,2);
+                    switch(cT){
+                        case 1:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 90){
+                                    me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        case 2:
+                            if(me.game.rnd.integerInRange(1,100) > 97){
+                                me.stageGimmicks.create(d*1,(d*j)+oy,'obs_lwc_l');
+                            }
+                            break;
+                        case 3:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 60){
+                                    me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        case 4:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 30){
+                                    me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        case 5:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 30){
+                                    me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*1,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 2:
+                    switch(cT){
+                        case 1:
+                            break;
+                        case 2:
+                            if(me.game.rnd.integerInRange(1,100) > 97){
+                                me.stageGimmicks.create(d*2,(d*j)+oy,'obs_lwc_l');
+                            }
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        case 5:
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 3:
+                    cf = me.game.rnd.integerInRange(3,5);
+                    switch(cT){
+                        case 1:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 90){
+                                    me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        case 2:
+                            if(me.game.rnd.integerInRange(1,100) > 97){
+                                me.stageGimmicks.create(d*3,(d*j)+oy,'obs_lwc_l');
+                            }
+                            break;
+                        case 3:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 60){
+                                    me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        case 4:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 30){
+                                    me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        case 5:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                if(me.game.rnd.integerInRange(1,100) > 30){
+                                    me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_s',cf);
+                                } else {
+                                    if(me.game.rnd.integerInRange(1,100) > 50){
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_t',cf);
+                                    } else {
+                                        me.stageGimmicks.create(d*3,(d*j)+oy,'obs_gbl_v',cf);
+                                    }
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case 4:
+                    switch(cT){
+                        case 1:
+                            if(me.game.rnd.integerInRange(1,100) > 80){
+                                me.stageObstacles.create(d*4,(d*j)+oy,'obs_kpa_r');
+                            }
+                            break;
+                        case 2:
+                            if(me.game.rnd.integerInRange(1,100) > 95){
+                                me.stageObstacles.create(d*4,(d*j)+oy,'obs_lwc_m');
+                                me.stageGimmicks.create(d*3,(d*j)+oy-100,'obs_lwc_mr');
+                            }
+                            break;
+                        case 3:
+                            break;
+                        case 4:
+                            break;
+                        case 5:
+                            if(me.game.rnd.integerInRange(1,100) > 90){
+                                if(me.game.rnd.integerInRange(1,100) > 50){
+                                    me.stageObstacles.create(d*4,(d*j)+oy,'obs_ucc_a');
+                                } else {
+                                    me.stageObstacles.create(d*4,(d*j)+oy,'obs_ucc_r');
+                                }
+                            }
+                            break;
+                        default:
+                            break;
+                        }
+                    j++;
+                    break;
+                default:
+                    break;
+            }
+        }
+    },
+
+    checkHit: function(obstacle,player){
+        if(player.x-(player.width/2) <= obstacle.x+obstacle.width &&
+            player.x-(player.width/2)+player.width >= obstacle.x &&
+            player.y-(player.height/2) <= obstacle.y+obstacle.height &&
+            player.height+player.y-(player.height/2) >= obstacle.y){
+                player.inv = true;
+                this.lives -= 1;
+                console.log('hit');
+        }
+        return;
+    },
+
     // FPS Counter
     render: function(){
-        //this.game.debug.text(this.game.time.fps || '--', 2, 14, "#00ff00");
+        //this.game.debug.text(this.player.x || '--', 2, 100, "#00ff00");
+        //this.game.debug.text(this.player.y || '--', 2, 150, "#00ff00");
         //this.game.debug.pointer(this.game.input.activePointer);
     }
 };

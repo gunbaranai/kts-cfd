@@ -53,11 +53,18 @@ CarFreeDay.Preload.prototype = {
         this.load.image('obs_lwc_mr','assets/images/lwc/obs_passable_right.png');
         this.load.image('obs_lwc_l','assets/images/lwc/obs_static_center.png');
 
+        this.load.image('obs_ucc_a','assets/images/ucc/obs_static_red.png');
+        this.load.image('obs_ucc_r','assets/images/ucc/obs_static_blue.png');
+
+        this.load.spritesheet('obs_gbl_v','assets/images/car/mobil-01.png',144,288);
+        this.load.spritesheet('obs_gbl_t','assets/images/car/mobil-02.png',144,288);
+        this.load.spritesheet('obs_gbl_s','assets/images/car/mobil-03.png',144,288);
+
         this.load.image('live','assets/images/live.png');
         this.load.image('coin','assets/images/coin.png');
         this.load.spritesheet('star','assets/images/star.png',102,90);
 
-        this.load.spritesheet('player','assets/images/player',144,144);
+        this.load.spritesheet('player','assets/images/player.png',144,144);
 
         this.load.image('wall_l','assets/images/wall-l.png');
         this.load.image('wall_r','assets/images/wall-r.png');
